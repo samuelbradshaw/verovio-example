@@ -55,18 +55,12 @@
         Zoom:
         <input type="range" id="zoom-slider" value="50" step="10" min="30" max="100">
       </label>
-<!--       <button id="test">Test</button> -->
     </header>
     <main>
       <!-- supported data-types: mxl, musicxml, mei, abc, humdrum, pae -->
       <div class="sheet-music-container" data-type="musicxml" data-url="https://www.verovio.org/examples/musicxml/Bach_Invention_No_1_BVW.772.xml"></div>
-<!--       <div class="sheet-music-container" data-type="mxl" data-url="https://archiveviewer.org/meta/cors-proxy?url=https://assets.churchofjesuschrist.org/19/9b/199b5a50ebba11ee9306eeeeac1e31f6af8eb67a/his_eye_is_on_the_sparrow.mxl" data-midi-url="https://archiveviewer.org/meta/cors-proxy?url=https://assets.churchofjesuschrist.org/02/e0/02e0df09ebba11eea9a7eeeeac1eca3cb7d5cfd1/his_eye_is_on_the_sparrow.midi"></div> -->
     </main>
     
-<!-- 
-    <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5"></script>
-    <script src="http://192.168.1.20:8000/html-midi-player.js" module></script>
- -->
     <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
     <script src="https://www.verovio.org/javascript/5.1.0/verovio-toolkit-wasm.js"></script>
         
@@ -165,7 +159,7 @@
       // -------- MIDI PLAYBACK (html-midi-player) --------
       
       // Load MIDI
-      // TODO: Figure out how to get MIDI to play in Safari (suspended AudioContext)
+      // TODO: Figure out how to get MIDI to play in Safari more consistently (suspended AudioContext)
       function loadMidi(container) {
         const vrvToolkit = container.data.vrvToolkit;
         const midiPlayer = container.children[0];
@@ -263,15 +257,6 @@
       zoomSlider.addEventListener('input', (event) => {
         Array.from(sheetMusicContainers).forEach((container) => { drawSheetMusic(container); });
       });
-//       
-//       document.querySelector('#test').addEventListener('click', playTone);
-//       function playTone(event) {
-//         let synth = new Tone.Synth().toDestination();
-//         let now = Tone.now();
-//         Tone.start();
-//         synth.triggerAttack(440, now);
-//         return synth;
-//       }
       
       
       // -------- UTILITY FUNCTIONS --------
@@ -287,18 +272,6 @@
           }
         }
       }, 500));
-      
-      // Convert base64 to array buffer
-      // Source: https://stackoverflow.com/a/21797381
-      function base64ToArrayBuffer(base64) {
-        var binary_string = window.atob(base64);
-        var len = binary_string.length;
-        var bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binary_string.charCodeAt(i);
-        }
-        return bytes.buffer;
-      }
       
       // Wrapper function to prevent the given function from being called too frequently
       // Adapted from https://levelup.gitconnected.com/debounce-in-javascript-improve-your-applications-performance-5b01855e086
