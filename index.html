@@ -33,7 +33,12 @@
         overflow-y: scroll;
         position: relative;
       }
-      g.note.active g.notehead {
+      g.chord.active g.notehead,
+      g.chord.active g.dots,
+      g.chord.active g.accid,
+      g.note.active g.notehead,
+      g.note.active g.dots,
+      g.note.active g.accid {
         fill: red;
       }
       midi-player {
@@ -190,7 +195,6 @@
         const alignmentFuzziness = 4;
         vrvNotes.sort((a, b) => a.time - b.time || a.pitch - b.pitch || (a.time + a.duration) - (b.time + b.duration));
         midiNoteSequence.notes = [...new Set(midiNoteSequence.notes)].filter((note) => note.instrument === 0).sort((a, b) => a.startTime - b.startTime || a.pitch - b.pitch || a.endTime - b.endTime);
-        
         for (let mn = 0; mn < midiNoteSequence.notes.length; mn++) {
           const note = midiNoteSequence.notes[mn];
           midiNoteSequence.notes[mn].startMs = parseInt(midiNoteSequence.notes[mn].startTime * 1000);
@@ -242,11 +246,14 @@
         const noteInfo = event.detail.note;
         const noteElement = document.getElementById(noteInfo.noteId);
         const tiedNoteElement = document.getElementById(noteInfo.tiedNoteId);
-        noteElement.classList.add('active');
+        const parentChordElement = noteElement?.closest('g.chord');
+        noteElement?.classList.add('active');
         tiedNoteElement?.classList.add('active');
+        parentChordElement?.classList.add('active');
         setTimeout(() => {
-          noteElement.classList.remove('active');
+          noteElement?.classList.remove('active');
           tiedNoteElement?.classList.remove('active');
+          parentChordElement?.classList.remove('active');
         }, noteInfo.endMs - noteInfo.startMs);
       }
       
