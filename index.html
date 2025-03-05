@@ -159,7 +159,6 @@
       // -------- MIDI PLAYBACK (html-midi-player) --------
       
       // Load MIDI
-      // TODO: Figure out how to get MIDI to play in Safari more consistently (suspended AudioContext)
       function loadMidi(container) {
         const vrvToolkit = container.data.vrvToolkit;
         const midiPlayer = container.children[0];
@@ -188,9 +187,10 @@
         }
         
         // Align Verovio notes with MIDI info
-        alignmentFuzziness = 10;
-        vrvNotes.sort((a, b) => a.time - b.time || (a.time + a.duration) - (b.time + b.duration) || a.pitch - b.pitch);
-        midiNoteSequence.notes.sort((a, b) => a.startTime - b.startTime || a.endTime - b.endTime || a.pitch - b.pitch)
+        const alignmentFuzziness = 4;
+        vrvNotes.sort((a, b) => a.time - b.time || a.pitch - b.pitch || (a.time + a.duration) - (b.time + b.duration));
+        midiNoteSequence.notes = [...new Set(midiNoteSequence.notes)].filter((note) => note.instrument === 0).sort((a, b) => a.startTime - b.startTime || a.pitch - b.pitch || a.endTime - b.endTime);
+        
         for (let mn = 0; mn < midiNoteSequence.notes.length; mn++) {
           const note = midiNoteSequence.notes[mn];
           midiNoteSequence.notes[mn].startMs = parseInt(midiNoteSequence.notes[mn].startTime * 1000);
@@ -201,7 +201,8 @@
             midiNoteSequence.notes[mn].noteId = vrvNotes[vn].noteId;
             midiNoteSequence.notes[mn].tiedNoteId = vrvNotes[vn].tiedNoteId;
             midiNoteSequence.notes[mn].measureId = vrvNotes[vn].measureId;
-            vrvNotes.splice(vn, 1);
+            // Remove matched note (and preceding unmatched notes) from the vrvNotes array
+            vrvNotes.splice(0, vn + 1);
           }
           
           // Attempt to find a note that matches exactly
@@ -219,7 +220,6 @@
           if (!midiNoteSequence.notes[mn].noteId) {
             for (let vn = 0; vn < Math.min(alignmentFuzziness, vrvNotes.length); vn++) {
               if (midiNoteSequence.notes[mn].pitch === vrvNotes[vn].pitch) {
-                console.log(midiNoteSequence.notes[mn].startMs, vrvNotes[vn].time, midiNoteSequence.notes[mn].endMs, vrvNotes[vn].time + vrvNotes[vn].duration)
                 copyInfoToMidiNote(mn, vn);
                 break;
               }
